@@ -22,5 +22,7 @@
     "extraHi": 200,
     "perk": 110
   },
-  "fallbackDollar": 50
+  "fallbackDollar": 50,
+  "notionCardRatesDb": "c70d05d5-2d76-4fe2-a93d-6ceda05c6f2a",
+  "minMargin": 0.2
 }

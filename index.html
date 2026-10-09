@@ -102,6 +102,7 @@ header.top{position:sticky;top:0;z-index:30;background:rgba(7,6,26,.88);backdrop
 .go{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:14px;padding:13px 16px;margin-bottom:10px;font-weight:800;font-size:16px;cursor:pointer;color:#fff}
 .go small{display:block;font-weight:600;opacity:.85;font-size:12px}
 .go .ic{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.go.cp{background:var(--card2);border:1px solid var(--line);font-weight:700}
 .go.fb{background:var(--fb)}.go.wa{background:var(--wa);color:#04210f}.go.ig{background:linear-gradient(45deg,#f09433,#dc2743,#bc1888)}
 .go .n{margin-inline-start:auto;background:rgba(0,0,0,.25);border-radius:20px;padding:0 10px;font-size:12px}
 .msg{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:10px;font-size:13px;color:var(--muted);margin-bottom:10px;white-space:pre-wrap}
@@ -268,7 +269,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
       </div>
       <div class="body">
         <div class="name" title="${esc(g.name)}">${esc(g.name)}</div>
-        <div class="genres">${(g.genres || []).map((x) => "لعبة " + esc(x)).join(" · ") || "&nbsp;"}</div>
+        <div class="genres">${g.subscription ? "اشتراك PlayStation Plus" : (g.genres || []).map((x) => "لعبة " + esc(x)).join(" · ") || "&nbsp;"}</div>
         ${u ? `<div class="usd">سعرها في المتجر: <b>${usd(u.now)}</b>${u.pct > 0 ? `<s>${usd(u.base)}</s>` : ""}</div>` : '<div class="usd">&nbsp;</div>'}
         <div class="opts">${opts}</div>
       </div>
@@ -298,7 +299,9 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
       <button class="go fb" data-go="fb"><span class="ic">💬</span><span>ماسنجر صفحتنا على فيسبوك<small>أسرع رد، هنكمّل معاك هناك</small></span><span class="n">1</span></button>
       <button class="go wa" data-go="wa"><span class="ic">📱</span><span>واتساب<small>الرسالة بتتكتب لوحدها</small></span><span class="n">2</span></button>
       ${igOk ? `<button class="go ig" data-go="ig"><span class="ic">📸</span><span>ماسنجر انستجرام<small>كلمنا على الدايركت</small></span><span class="n">3</span></button>` : ""}
+      <div class="how" style="margin-top:4px">رسالة الطلب (بتتكتب لوحدها في واتساب وماسنجر):</div>
       <div class="msg" id="msgBox">${esc(txt)}</div>
+      <button class="go cp" data-go="copy"><span class="ic">📋</span><span>انسخ الرسالة<small>للصقها في أي شات</small></span></button>
       <button class="close" id="closeBtn" type="button">إلغاء</button>`;
     $("#ov").classList.add("on");
     document.body.style.overflow = "hidden";
@@ -308,15 +311,19 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
   async function go(kind) {
     const c = CFG.contacts || {};
     const txt = PICK ? orderText() : "السلام عليكم، عايز أشتري لعبة من عندكم.";
+    if (kind === "copy") { try { await navigator.clipboard.writeText(txt); toast("اتنسخت الرسالة 👌"); } catch { toast("مقدرناش ننسخ، انسخها من الصندوق"); } return; }
     if (kind === "wa") {
       const n = waNum();
       if (!n || /X/i.test(String(c.whatsapp))) { toast("رقم الواتساب لسه مش متحط في الموقع"); return; }
       window.open(`https://wa.me/${n}?text=${encodeURIComponent(txt)}`, "_blank", "noopener");
       return;
     }
-    const url = kind === "fb" ? c.facebookMessenger : c.instagram;
+    let url = kind === "fb" ? c.facebookMessenger : c.instagram;
     if (!url || /YOUR_/i.test(url)) { toast("الرابط ده لسه مش متحط في الموقع"); return; }
-    try { await navigator.clipboard.writeText(txt); toast("اتنسخت رسالة الطلب، الصقها في الشات 👌"); } catch { /* ignore */ }
+    let copied = false;
+    try { await navigator.clipboard.writeText(txt); copied = true; } catch { /* ignore */ }
+    if (kind === "fb") url += (url.includes("?") ? "&" : "?") + "text=" + encodeURIComponent(txt); // the chat opens with the message already typed
+    toast(kind === "fb" ? "هتفتحلك الشات والرسالة مكتوبة، ابعتها. ولو ماظهرتش الصقها (اتنسخت)." : "اتنسخت رسالة الطلب، الصقها في الدايركت وابعتها 👌");
     window.open(url, "_blank", "noopener");
   }
 

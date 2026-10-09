@@ -129,14 +129,16 @@ async function loadNotion() {
 }
 
 // --------------------------------------------------------------- PlayStation Store (US)
+const REGIONS = {"US":["en","USD"],"CA":["en","CAD"],"MX":["es","MXN"],"BR":["pt","BRL"],"AR":["es","USD"],"CL":["es","USD"],"CO":["es","USD"],"HN":["es","HNL"],"NI":["es","NIO"],"BO":["es","USD"],"CR":["es","USD"],"EC":["es","USD"],"SV":["es","USD"],"GT":["es","USD"],"PA":["es","USD"],"PY":["es","USD"],"PE":["es","USD"],"UY":["es","USD"],"GB":["en","GBP"],"DE":["de","EUR"],"PL":["pl","PLN"],"AT":["de","EUR"],"BE":["fr","EUR"],"BG":["en","EUR"],"HR":["en","EUR"],"CY":["en","EUR"],"FI":["en","EUR"],"FR":["fr","EUR"],"GR":["en","EUR"],"IS":["en","EUR"],"IE":["en","EUR"],"IT":["it","EUR"],"LU":["de","EUR"],"MT":["en","EUR"],"NL":["nl","EUR"],"PT":["pt","EUR"],"SK":["en","EUR"],"SI":["en","EUR"],"ES":["es","EUR"],"CZ":["en","CZK"],"HU":["en","HUF"],"RO":["en","RON"],"SE":["sv","SEK"],"NO":["no","NOK"],"DK":["da","DKK"],"CH":["de","CHF"],"UA":["uk","UAH"],"TR":["en","TRY"],"RU":["ru","RUB"],"IL":["en","ILS"],"SA":["en","USD"],"AE":["en","USD"],"BH":["en","USD"],"KW":["en","USD"],"OM":["en","USD"],"QA":["en","USD"],"LB":["en","USD"],"ZA":["en","ZAR"],"IN":["en","INR"],"JP":["ja","JPY"],"KR":["ko","KRW"],"HK":["en","HKD"],"TW":["en","TWD"],"ID":["en","IDR"],"TH":["en","THB"],"MY":["en","MYR"],"SG":["en","SGD"],"AU":["en","AUD"],"NZ":["en","NZD"]}; // cc -> [language, store currency]
 const GQL = "https://web.np.playstation.com/api/graphql/v1/op";
 const HASH = "4df6284f982e57bec70f23c77e2c219dc792eb19af7fb3d3a81767aa3f1958aa";
 const GAME_TYPES = ["FULL_GAME", "GAME_BUNDLE", "PREMIUM_EDITION"];
-async function sonySearch(term) {
-  const vars = { countryCode: "US", languageCode: "en", nextCursor: "", pageOffset: 0, pageSize: 12, searchTerm: term };
+const sonySearch = (term) => sonySearchIn("US", "en", term);
+async function sonySearchIn(cc, lang, term) {
+  const vars = { countryCode: cc, languageCode: lang, nextCursor: "", pageOffset: 0, pageSize: 12, searchTerm: term };
   const url = `${GQL}?operationName=getSearchResults&variables=${encodeURIComponent(JSON.stringify(vars))}&extensions=${encodeURIComponent(JSON.stringify({ persistedQuery: { version: 1, sha256Hash: HASH } }))}`;
   return retry(async () => {
-    const r = await fetch(url, { headers: { "content-type": "application/json", "x-psn-store-locale-override": "en-US", origin: "https://store.playstation.com", referer: "https://store.playstation.com/" } });
+    const r = await fetch(url, { headers: { "content-type": "application/json", "x-psn-store-locale-override": `${lang}-${cc}`, origin: "https://store.playstation.com", referer: "https://store.playstation.com/" } });
     if (!r.ok) throw new Error("sony " + r.status);
     return (await r.json())?.data?.universalSearch?.results ?? [];
   });
@@ -181,6 +183,65 @@ async function fetchGenres(productId) {
   return [...m[1].matchAll(/"value":"([^"]+)"/g)].map((x) => x[1]);
 }
 
+// --------------------------------------------------------------- PlayStation Plus subscriptions
+function plusInfo(name) {
+  const m = String(name).match(/^plus\s+(e[a-z]*|extra|deluxe|premium)[a-z]*\s+(\d+)\s*months?/i);
+  if (!m) return null;
+  const t = m[1].toLowerCase(), months = Number(m[2]);
+  const tier = t.startsWith("e") && t !== "extra" ? "Essential" : t === "extra" ? "Extra" : "Deluxe";
+  return { name: `PlayStation Plus ${tier} - ${months} ${months === 1 ? "Month" : "Months"}`, tier, months };
+}
+
+// --------------------------------------------------------------- card rates + regional cost (to keep auto prices profitable)
+async function loadCardRates() {
+  if (SAMPLE) return JSON.parse(process.env.CARD_RATES || '{"TR":1.45,"UA":1.36,"US":51}');
+  if (!TOKEN || !cfg.notionCardRatesDb) return null;
+  try {
+    const rows = await queryAll(cfg.notionCardRatesDb);
+    const out = {};
+    for (const pg of rows) {
+      const p = pg.properties ?? {};
+      const cc = strOf(prop(p, ["Code"])).trim().toUpperCase(), v = numOf(prop(p, ["Rate"]));
+      if (cc && v > 0 && REGIONS[cc]) out[cc] = v;
+    }
+    return Object.keys(out).length ? out : null;
+  } catch (e) { console.warn("card rates unavailable (share 💱 Card Rates with the integration):", e.message); return null; }
+}
+async function fxTable() {
+  for (const url of ["https://api.coinbase.com/v2/exchange-rates?currency=USD", "https://open.er-api.com/v6/latest/USD"]) {
+    try { const j = await (await fetch(url)).json(); const r = j?.data?.rates ?? j?.rates; if (r?.EGP) return Object.fromEntries(Object.entries(r).map(([k, v]) => [k, Number(v)])); } catch { /* next */ }
+  }
+  return {};
+}
+function listingCurrency(text, regionCur) {
+  const s = String(text || "");
+  if (/US\$|USD/i.test(s)) return "USD";
+  if (/TL|₺|TRY/.test(s)) return "TRY";
+  if (s.includes("$") && !["USD", "CAD", "AUD", "NZD", "HKD", "TWD", "SGD", "MXN"].includes(regionCur)) return "USD";
+  return regionCur;
+}
+// cheapest EGP cost of this game over the regions you buy cards for (card rate = EGP per 1 unit of the store currency)
+async function cheapestCost(name, platforms, rates, fx) {
+  let best = null;
+  await pool(Object.keys(rates), 5, async (cc) => {
+    const [lang, cur] = REGIONS[cc];
+    try {
+      let res = await sonySearchIn(cc, lang, name);
+      let x = pickProduct(name, res, { p5: platforms.includes("PS5") ? 1 : null, p4: platforms.includes("PS4") ? 1 : null });
+      if (!x && lang !== "en") { res = await sonySearchIn(cc, cc === "UA" ? "ru" : "en", name); x = pickProduct(name, res, { p5: platforms.includes("PS5") ? 1 : null, p4: platforms.includes("PS4") ? 1 : null }); }
+      if (!x) return;
+      const plus = (x.price.serviceBranding ?? []).includes("PS_PLUS");
+      const txt = plus ? x.price.basePrice : (x.price.discountedPrice ?? x.price.basePrice);
+      let v = parsePrice(txt); if (!v) return;
+      const from = listingCurrency(txt, cur);
+      if (from !== cur) { if (!fx[from] || !fx[cur]) return; v = v * (fx[cur] / fx[from]); }
+      const cost = v * rates[cc];
+      if (!best || cost < best) best = cost;
+    } catch { /* region skipped */ }
+  });
+  return best;
+}
+
 // --------------------------------------------------------------- auto pricing (same rules as HEXA Pricer)
 const r10 = (n) => Math.round(n / 10) * 10;
 async function officialDollar() {
@@ -202,7 +263,7 @@ function fullFor(V) {
   return c.sort((a, b) => ((a % 50 ? 1000 : 0) + Math.abs(a - mid)) - ((b % 50 ? 1000 : 0) + Math.abs(b - mid)))[0];
 }
 const PERK_RE = /fifa|ea sports fc|\bfc ?\d{2}\b|madden|nba ?2k|ultimate team|\bpoints\b|\bvc\b/i;
-function autoPrices(usd, platforms, name, dollar) {
+function autoPrices(usd, platforms, name, dollar, cost) {
   const full = fullFor(usd * dollar);
   const has4 = platforms.includes("PS4"), has5 = platforms.includes("PS5") || has4; // PS4 games run on PS5 too
   const slots = [];
@@ -215,13 +276,21 @@ function autoPrices(usd, platforms, name, dollar) {
   let sum = Object.values(out).reduce((a, b) => a + b, 0);
   const big = slots.slice().sort((a, b) => b[1] - a[1])[0][0];
   for (let g = 0; g < 30 && (sum < full + PR.extraLo || sum > full + PR.extraHi); g++) { const d = sum < full + PR.extraLo ? 10 : -10; out[big] += d; sum += d; }
+  // never sell at a loss: if the slots together don't cover the cheapest card cost + minimum margin, raise them
+  if (cost) {
+    const need = cost * (1 + (Number(cfg.minMargin) || 0.2)), have = Object.values(out).reduce((a, b) => a + b, 0);
+    if (have < need) { const f = need / have; for (const k of Object.keys(out)) out[k] = Math.ceil((out[k] * f) / 10) * 10; }
+  }
   return { ps5: out.ps5 ?? null, ps4: out.ps4 ?? null, sec: out.sec ?? null };
 }
 
 // --------------------------------------------------------------- main
 const notionGames = await loadNotion();
 const DOLLAR = await officialDollar();
-let autoPriced = 0;
+const CARD_RATES = await loadCardRates();
+const FX = CARD_RATES ? await fxTable() : {};
+let autoPriced = 0, raised = 0;
+if (CARD_RATES) console.log("Card rates for cost check:", Object.keys(CARD_RATES).join(", ")); else console.log("No card rates → prices are NOT cost-checked");
 const meta = JSON.parse(await fs.readFile(META, "utf8").catch(() => "{}"));
 console.log(`Notion: ${notionGames.length} games`);
 
@@ -234,6 +303,11 @@ const rows = await pool(notionGames, 6, async (g) => {
     prices: { ps5: g.p5, ps4: g.p4, sec: g.sec }, avail: g.avail,
     cover: null, genres: [], usd: null, platforms: [], sonyId: null,
   };
+  const plus = plusInfo(g.name);
+  if (plus) {
+    row.name = plus.name; row.cover = "assets/psplus.png"; row.genres = ["اشتراك"]; row.platforms = ["PS4", "PS5"]; row.subscription = true;
+    return row;
+  }
   try {
     const res = await sonySearch(cleanName(g.name));
     const x = pickProduct(cleanName(g.name), res, g);
@@ -252,7 +326,10 @@ const rows = await pool(notionGames, 6, async (g) => {
       }
       row.genres = (meta[x.id].genres ?? []).map(arGenre).filter((v, i, a) => a.indexOf(v) === i).slice(0, 3);
       if (unpriced && row.usd) { // not priced in Notion → price it with the same rule the HEXA Pricer uses
-        row.prices = autoPrices(row.usd.now, row.platforms, row.name, DOLLAR);
+        const cost = CARD_RATES ? await cheapestCost(row.name, row.platforms, CARD_RATES, FX) : null;
+        const base = autoPrices(row.usd.now, row.platforms, row.name, DOLLAR, null);
+        row.prices = autoPrices(row.usd.now, row.platforms, row.name, DOLLAR, cost);
+        if (JSON.stringify(base) !== JSON.stringify(row.prices)) raised++;
         row.autoPriced = true; autoPriced++;
       }
     }
@@ -270,4 +347,4 @@ const unique = games.filter((g) => { const k = cmp(g.name) + "|" + JSON.stringif
 await fs.mkdir(path.join(ROOT, "data"), { recursive: true });
 await fs.writeFile(META, JSON.stringify(meta));
 await fs.writeFile(OUT, JSON.stringify({ updatedAt: new Date().toISOString(), count: unique.length, games: unique }));
-console.log(`Dollar ${DOLLAR}. Done: ${unique.length} games written (${found} matched on PS Store, ${genresFetched} new genre lookups, ${autoPriced} priced automatically).`);
+console.log(`Dollar ${DOLLAR}. Done: ${unique.length} games written (${found} matched on PS Store, ${genresFetched} new genre lookups, ${autoPriced} priced automatically, ${raised} of them raised to stay profitable).`);

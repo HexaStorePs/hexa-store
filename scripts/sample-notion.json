@@ -310,5 +310,29 @@
   "p5": null,
   "p4": null,
   "sec": null
+ },
+ {
+  "name": "Plus Eseential 12 months",
+  "p5": 2800,
+  "p4": 1200,
+  "sec": 400
+ },
+ {
+  "name": "Plus Essential 3 months",
+  "p5": 1100,
+  "p4": 650,
+  "sec": 100
+ },
+ {
+  "name": "Plus Extra 12 months",
+  "p5": 3800,
+  "p4": 1500,
+  "sec": 1100
+ },
+ {
+  "name": "Plus Extra 3 months",
+  "p5": 1650,
+  "p4": 850,
+  "sec": 400
  }
 ]
