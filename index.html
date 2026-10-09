@@ -70,6 +70,8 @@ header.top{position:sticky;top:0;z-index:30;background:rgba(7,6,26,.88);backdrop
 .cover .ph{display:flex;align-items:center;justify-content:center;height:100%;font-size:44px;font-weight:800;color:var(--gold);opacity:.5}
 .tag{position:absolute;top:8px;inset-inline-start:8px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.15);padding:2px 9px;border-radius:20px;font-size:12px;font-weight:800;direction:ltr}
 .tag.sale{background:var(--pink);color:#2a0016;border-color:transparent}
+.stk{position:absolute;top:8px;inset-inline-end:8px;border-radius:20px;padding:2px 9px;font-size:12px;font-weight:800;background:rgba(0,0,0,.72)}
+.stk.in{background:rgba(52,211,153,.92);color:#04210f}.stk.out{color:var(--muted);border:1px solid rgba(255,255,255,.15)}
 .plat{position:absolute;bottom:8px;inset-inline-end:8px;display:flex;gap:4px}
 .plat span{background:rgba(0,0,0,.72);border-radius:6px;padding:0 6px;font-size:11px;font-weight:800;letter-spacing:.04em}
 .body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
@@ -84,8 +86,9 @@ header.top{position:sticky;top:0;z-index:30;background:rgba(7,6,26,.88);backdrop
 .opt .l{font-size:12.5px;color:var(--muted);font-weight:600}
 .opt .p{font-weight:800;color:var(--gold2);font-size:16px;white-space:nowrap}
 .opt .p small{font-size:11px;font-weight:600;color:var(--muted);margin-inline-start:3px}
-.opt.off{opacity:.45;cursor:default;pointer-events:none}
-.opt.off .p{font-size:12px;color:var(--muted)}
+.opt.off{opacity:.72;border-style:dashed}
+.opt.off .p{color:var(--muted)}
+.opt .l em{display:block;font-style:normal;font-size:11px;color:var(--pink);font-weight:600}
 .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 0}
 
 /* modal */
@@ -134,6 +137,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     <button class="chip on" data-plat="all">الكل</button>
     <button class="chip" data-plat="PS5">PS5</button>
     <button class="chip" data-plat="PS4">PS4</button>
+    <button class="chip" data-avail="1">✅ المتاح دلوقتي</button>
     <button class="chip" data-sale="1">🔥 عليها خصم</button>
     <span class="sp"></span>
     <select class="sel" id="sort">
@@ -165,7 +169,8 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
 
   let CFG = { contacts: {}, currency: "ج", refreshMinutes: 5 };
   let ALL = [], UPDATED = null;
-  const F = { q: "", plat: "all", sale: false, genre: "", sort: "name" };
+  const F = { q: "", plat: "all", sale: false, avail: false, genre: "", sort: "name" };
+  const anyAvail = (g) => !g.avail || Object.values(g.avail).some(Boolean);
 
   // ------------------------------------------------------------------ data
   async function load(first) {
@@ -209,10 +214,11 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
   function view() {
     const q = norm(F.q);
     let r = ALL.filter((g) => (!q || norm(g.name).includes(q)) && (F.plat === "all" || platsOf(g).includes(F.plat)) &&
-      (!F.sale || (g.usd && g.usd.pct > 0)) && (!F.genre || (g.genres || []).includes(F.genre)));
+      (!F.sale || (g.usd && g.usd.pct > 0)) && (!F.avail || anyAvail(g)) && (!F.genre || (g.genres || []).includes(F.genre)));
     const s = F.sort;
     r.sort((a, b) => s === "low" ? minPrice(a) - minPrice(b) : s === "high" ? (minPrice(b) === Infinity ? -1 : minPrice(b)) - (minPrice(a) === Infinity ? -1 : minPrice(a))
       : s === "sale" ? (b.usd?.pct || 0) - (a.usd?.pct || 0) : a.name.localeCompare(b.name, "en"));
+    r.sort((a, b) => Number(anyAvail(b)) - Number(anyAvail(a))); // what you can buy right now comes first (stable)
     return r;
   }
   function img(g) {
@@ -224,12 +230,13 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     const a = g.avail;
     const opts = SLOTS.filter(([k]) => g.prices[k] != null).map(([k, label]) => {
       const off = a && a[k] === false;
-      return `<button class="opt${off ? " off" : ""}" data-i="${i}" data-k="${k}" ${off ? "disabled" : ""}><span class="l">${label}</span><span class="p">${off ? "غير متاح حاليًا" : `${fmt(g.prices[k])}<small>${esc(CFG.currency)}</small>`}</span></button>`;
+      return `<button class="opt${off ? " off" : ""}" data-i="${i}" data-k="${k}"><span class="l">${label}${off ? "<em>نفد حاليًا · اسأل عن التوفير</em>" : ""}</span><span class="p">${fmt(g.prices[k])}<small>${esc(CFG.currency)}</small></span></button>`;
     }).join("");
     const u = g.usd;
     return `<article class="card">
       <div class="cover">${img(g)}
         ${u && u.pct > 0 ? `<span class="tag sale">🔥 -${u.pct}%</span>` : ""}
+        <span class="stk ${anyAvail(g) ? "in" : "out"}">${anyAvail(g) ? "✅ متاح" : "نفد حاليًا"}</span>
         <span class="plat">${platsOf(g).map((p) => `<span>${p}</span>`).join("")}</span>
       </div>
       <div class="body">
@@ -249,14 +256,16 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
   // ------------------------------------------------------------------ order sheet
   let PICK = null;
   const waNum = () => String(CFG.contacts?.whatsapp || "").replace(/\D/g, "");
-  const orderText = () => `السلام عليكم، عايز أشتري لعبة:\n🎮 ${PICK.g.name}\n🕹️ ${PICK.label}\n💸 ${fmt(PICK.price)} ${CFG.currency}`;
+  const orderText = () => (PICK.off
+    ? `السلام عليكم، عايز أسأل هل اللعبة دي ممكن تتوفر:\n🎮 ${PICK.g.name}\n🕹️ ${PICK.label}\n💸 ${fmt(PICK.price)} ${CFG.currency}`
+    : `السلام عليكم، عايز أشتري لعبة:\n🎮 ${PICK.g.name}\n🕹️ ${PICK.label}\n💸 ${fmt(PICK.price)} ${CFG.currency}`);
   function openSheet(pick) {
     PICK = pick;
     const c = CFG.contacts || {};
     const igOk = !!c.instagram && !/YOUR_/i.test(c.instagram);
     const txt = pick ? orderText() : "السلام عليكم، عايز أشتري لعبة من عندكم.";
     $("#sheet").innerHTML = `
-      <h3>${pick ? "تمام! كمّل طلبك" : "اطلب دلوقتي"}</h3>
+      <h3>${pick ? (pick.off ? "اسأل عن توفير اللعبة" : "تمام! كمّل طلبك") : "اطلب دلوقتي"}</h3>
       ${pick ? `<div class="sum"><div class="g">${esc(pick.g.name)}</div><div class="o"><span>${esc(pick.label)}</span><b>${fmt(pick.price)} ${esc(CFG.currency)}</b></div></div>` : ""}
       <div class="how">اختار طريقة التواصل (الأسرع أولًا):</div>
       <button class="go fb" data-go="fb"><span class="ic">💬</span><span>ماسنجر صفحتنا على فيسبوك<small>أسرع رد، هنكمّل معاك هناك</small></span><span class="n">1</span></button>
@@ -289,6 +298,8 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     const t = e.target;
     const plat = t.closest("[data-plat]");
     if (plat) { F.plat = plat.dataset.plat; document.querySelectorAll("[data-plat]").forEach((b) => b.classList.toggle("on", b === plat)); render(); return; }
+    const av = t.closest("[data-avail]");
+    if (av) { F.avail = !F.avail; av.classList.toggle("on", F.avail); render(); return; }
     const sale = t.closest("[data-sale]");
     if (sale) { F.sale = !F.sale; sale.classList.toggle("on", F.sale); render(); return; }
     const ge = t.closest("[data-genre]");
@@ -296,7 +307,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     const op = t.closest(".opt[data-i]");
     if (op) {
       const g = ALL[Number(op.dataset.i)], k = op.dataset.k;
-      openSheet({ g, k, label: SLOTS.find((s) => s[0] === k)[1], price: g.prices[k] });
+      openSheet({ g, k, label: SLOTS.find((s) => s[0] === k)[1], price: g.prices[k], off: !!(g.avail && g.avail[k] === false) });
       return;
     }
     const gb = t.closest("[data-go]"); if (gb) { go(gb.dataset.go); return; }
