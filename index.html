@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>HEXA STORE | ألعاب بلايستيشن</title>
+<meta name="description" content="HEXA STORE: ألعاب بلايستيشن PS5 و PS4 بأحسن الأسعار. اختار لعبتك واطلبها على ماسنجر أو واتساب." />
+<meta name="theme-color" content="#07061a" />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+@font-face{font-family:"PS2P";src:url(assets/PressStart2P-latin.woff2) format("woff2");font-display:swap}
+:root{
+  --bg:#07061a;--bg2:#0d0a24;--card:#110e2a;--card2:#1a1540;--line:#2e2766;
+  --gold:#ffc83d;--gold2:#ffd96b;--pink:#ff5fae;--lav:#b9a8ff;--blue:#4f6bff;--text:#f4f1ff;--muted:#a79fd4;
+  --ok:#34d399;--bad:#f87171;--fb:#1877f2;--wa:#25d366;--ig:#e1306c;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(900px 420px at 80% -120px,rgba(79,107,255,.28) 0,transparent 70%),radial-gradient(800px 380px at 10% -100px,rgba(255,95,174,.20) 0,transparent 70%),var(--bg);color:var(--text);
+  font-family:"Cairo",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:30;background:rgba(7,6,26,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 0}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand img{width:46px;height:46px;border-radius:12px;object-fit:cover;image-rendering:pixelated;box-shadow:0 0 0 2px var(--line)}
+.brand b{font-family:"PS2P",monospace;font-size:14px;letter-spacing:.04em;color:var(--gold);display:block;line-height:1.2;text-shadow:2px 2px 0 #3b2a00}
+.brand b i{font-style:normal;color:var(--pink);text-shadow:2px 2px 0 #4a0f2c}
+.brand small{color:var(--muted);font-size:11px;display:block}
+.search{flex:1;position:relative;min-width:0}
+.search input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 44px 11px 14px;outline:none;font-size:15px}
+.search input:focus{border-color:var(--gold)}
+.search svg{position:absolute;inset-inline-start:auto;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted)}
+.contactBtn{flex:none;background:linear-gradient(135deg,var(--gold),#ff9f1c);color:#241500;box-shadow:0 4px 0 #8a5a00;border:0;font-weight:800;border-radius:14px;padding:10px 16px;cursor:pointer;white-space:nowrap}
+
+/* hero */
+.hero{padding:26px 0 8px;text-align:center}
+.hero h1{margin:0;font-size:clamp(22px,4.5vw,36px);font-weight:800}
+.hero h1 span{color:var(--pink)}
+.heroLogo{width:92px;height:92px;border-radius:22px;image-rendering:pixelated;box-shadow:0 0 0 3px var(--line),0 10px 40px rgba(79,107,255,.45);margin-bottom:10px}
+.hero p{margin:6px auto 0;color:var(--muted);max-width:620px}
+.steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:30px;padding:6px 14px;font-size:13px;color:var(--lav)}
+
+/* filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:16px 0 10px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:30px;padding:6px 14px;cursor:pointer;color:var(--muted);font-size:14px;white-space:nowrap}
+.chip:hover{border-color:var(--gold)}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:700}
+.sel{background:var(--card);border:1px solid var(--line);border-radius:30px;padding:6px 12px;cursor:pointer;outline:none}
+.sp{flex:1}
+.meta{color:var(--muted);font-size:12px;padding-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;margin-inline-end:5px;box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;padding-bottom:50px}
+@media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.brand small{display:none}}
+@media(max-width:640px){.bar{flex-wrap:wrap}.brand{order:1}.contactBtn{order:2;margin-inline-start:auto}.search{order:3;flex:1 1 100%}}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-3px);border-color:var(--pink);box-shadow:0 8px 24px rgba(255,95,174,.15)}
+.cover{position:relative;aspect-ratio:1/1;background:linear-gradient(135deg,#241c5a,#0d0a24);overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.cover .ph{display:flex;align-items:center;justify-content:center;height:100%;font-size:44px;font-weight:800;color:var(--gold);opacity:.5}
+.tag{position:absolute;top:8px;inset-inline-start:8px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.15);padding:2px 9px;border-radius:20px;font-size:12px;font-weight:800;direction:ltr}
+.tag.sale{background:var(--pink);color:#2a0016;border-color:transparent}
+.plat{position:absolute;bottom:8px;inset-inline-end:8px;display:flex;gap:4px}
+.plat span{background:rgba(0,0,0,.72);border-radius:6px;padding:0 6px;font-size:11px;font-weight:800;letter-spacing:.04em}
+.body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.name{font-weight:700;font-size:15px;line-height:1.35;min-height:2.7em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;unicode-bidi:plaintext;text-align:right}
+.genres{color:var(--muted);font-size:12px;min-height:1.5em}
+.usd{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.usd b{color:var(--text);font-size:13px;direction:ltr}
+.usd s{direction:ltr}
+.opts{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:6px}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:8px 10px;cursor:pointer;text-align:start;width:100%}
+.opt:hover{border-color:var(--gold);background:#241c58}
+.opt .l{font-size:12.5px;color:var(--muted);font-weight:600}
+.opt .p{font-weight:800;color:var(--gold2);font-size:16px;white-space:nowrap}
+.opt .p small{font-size:11px;font-weight:600;color:var(--muted);margin-inline-start:3px}
+.opt.off{opacity:.45;cursor:default;pointer-events:none}
+.opt.off .p{font-size:12px;color:var(--muted)}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 0}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:60;display:none;align-items:flex-end;justify-content:center}
+.ov.on{display:flex}
+.sheet{background:var(--bg2);border:1px solid var(--line);border-radius:22px 22px 0 0;width:100%;max-width:520px;padding:18px 18px 24px;animation:up .18s ease-out;max-height:92vh;overflow:auto}
+@media(min-width:640px){.ov{align-items:center}.sheet{border-radius:22px}}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.sheet h3{margin:0 0 4px;font-size:19px}
+.sum{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:10px 0}
+.sum .g{font-weight:800;unicode-bidi:plaintext;text-align:right}
+.sum .o{display:flex;justify-content:space-between;color:var(--muted);margin-top:2px}
+.sum .o b{color:var(--gold2)}
+.how{color:var(--muted);font-size:13px;margin:12px 0 8px}
+.go{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:14px;padding:13px 16px;margin-bottom:10px;font-weight:800;font-size:16px;cursor:pointer;color:#fff}
+.go small{display:block;font-weight:600;opacity:.85;font-size:12px}
+.go .ic{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.go.fb{background:var(--fb)}.go.wa{background:var(--wa);color:#04210f}.go.ig{background:linear-gradient(45deg,#f09433,#dc2743,#bc1888)}
+.go .n{margin-inline-start:auto;background:rgba(0,0,0,.25);border-radius:20px;padding:0 10px;font-size:12px}
+.msg{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:10px;font-size:13px;color:var(--muted);margin-bottom:10px;white-space:pre-wrap}
+.close{display:block;margin:6px auto 0;background:transparent;border:0;color:var(--muted);cursor:pointer;padding:8px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--gold);color:#241500;font-weight:800;padding:10px 18px;border-radius:30px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:22px 16px 40px;font-size:13px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap bar">
+  <a class="brand" href="#"><img src="assets/logo.png" alt="HEXA STORE" /><div><b id="siteName">HEXA <i>STORE</i></b><small id="tagline">Your Gaming World</small></div></a>
+  <label class="search">
+    <input id="q" type="search" placeholder="دوّر على لعبة… (Elden Ring)" autocomplete="off" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+  </label>
+  <button class="contactBtn" id="topContact" type="button">اطلب دلوقتي</button>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <img class="heroLogo" src="assets/logo.png" alt="HEXA STORE" />
+    <h1>ألعاب <span>بلايستيشن</span> بأحسن سعر</h1>
+    <p>اختار لعبتك، شوف سعرها، وكلمنا على ماسنجر أو واتساب وتستلمها فورًا.</p>
+    <div class="steps"><span class="step">① اختار اللعبة</span><span class="step">② اختار النسخة</span><span class="step">③ كلمنا واطلب</span></div>
+  </section>
+
+  <div class="filters" id="filters">
+    <button class="chip on" data-plat="all">الكل</button>
+    <button class="chip" data-plat="PS5">PS5</button>
+    <button class="chip" data-plat="PS4">PS4</button>
+    <button class="chip" data-sale="1">🔥 عليها خصم</button>
+    <span class="sp"></span>
+    <select class="sel" id="sort">
+      <option value="name">ترتيب: الاسم</option>
+      <option value="low">الأرخص أولًا</option>
+      <option value="high">الأغلى أولًا</option>
+      <option value="sale">أعلى خصم</option>
+    </select>
+  </div>
+  <div class="filters" id="genres" style="padding-top:0"></div>
+  <div class="meta"><span><i class="dot"></i><span id="upd">بيحمّل…</span></span><span id="cnt"></span></div>
+  <div class="grid" id="grid"><div class="empty">بيحمّل الألعاب…</div></div>
+</main>
+
+<footer>© <span id="yr"></span> <b id="foot">HEXA STORE</b> · الأسعار بالجنيه المصري، وسعر الدولار هو السعر الحالي في متجر بلايستيشن الأمريكي.<div id="flinks" style="margin-top:8px"></div></footer>
+
+<div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = (n) => Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  const usd = (n) => "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const norm = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’‘`´™®©]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
+  const SLOTS = [["ps5", "Primary PS5"], ["ps4", "Primary PS4"], ["sec", "Secondary"]];
+
+  let CFG = { contacts: {}, currency: "ج", refreshMinutes: 5 };
+  let ALL = [], UPDATED = null;
+  const F = { q: "", plat: "all", sale: false, genre: "", sort: "name" };
+
+  // ------------------------------------------------------------------ data
+  async function load(first) {
+    try {
+      const [cfg, data] = await Promise.all([
+        fetch("site.config.json?t=" + Date.now(), { cache: "no-store" }).then((r) => r.json()).catch(() => null),
+        fetch("data/games.json?t=" + Date.now(), { cache: "no-store" }).then((r) => { if (!r.ok) throw 0; return r.json(); }),
+      ]);
+      if (cfg) { CFG = { ...CFG, ...cfg }; $("#siteName").innerHTML = (cfg.siteName || "HEXA STORE").replace(/^(\S+)\s*(.*)$/, (m, a, b) => esc(a) + (b ? " <i>" + esc(b) + "</i>" : "")); $("#foot").textContent = cfg.siteName || "HEXA STORE"; if (cfg.tagline) $("#tagline").textContent = cfg.tagline; }
+      { const c = CFG.contacts || {}, a = [];
+        if (c.facebookPage) a.push(`<a href="${esc(c.facebookPage)}" target="_blank" rel="noopener" style="color:var(--lav)">صفحتنا على فيسبوك</a>`);
+        if (c.instagram && !/YOUR_/i.test(c.instagram)) a.push(`<a href="${esc(c.instagram.replace("ig.me/m/", "instagram.com/"))}" target="_blank" rel="noopener" style="color:var(--lav)">انستجرام</a>`);
+        $("#flinks").innerHTML = a.join(" · "); }
+      ALL = data.games || []; UPDATED = data.updatedAt;
+      buildGenres(); render(); stamp();
+    } catch (e) { if (first) $("#grid").innerHTML = '<div class="empty">مقدرناش نحمّل الألعاب دلوقتي. جرّب تحدّث الصفحة.</div>'; }
+  }
+  function stamp() {
+    if (!UPDATED) return;
+    const mins = Math.max(0, Math.round((Date.now() - new Date(UPDATED).getTime()) / 6e4));
+    $("#upd").textContent = "الأسعار محدّثة " + (mins < 1 ? "من لحظات" : mins < 60 ? `من ${mins} دقيقة` : mins < 1440 ? `من ${Math.round(mins / 60)} ساعة` : "من أكتر من يوم");
+  }
+
+  // ------------------------------------------------------------------ list
+  function minPrice(g) { const v = SLOTS.map(([k]) => g.prices[k]).filter((x) => x != null); return v.length ? Math.min(...v) : Infinity; }
+  function platsOf(g) {
+    const s = new Set();
+    if (g.prices.ps5 != null) s.add("PS5");
+    if (g.prices.ps4 != null) s.add("PS4");
+    (g.platforms || []).forEach((p) => (p === "PS5" || p === "PS4") && s.add(p));
+    if (!s.size && g.prices.sec != null) (g.platforms || []).forEach((p) => s.add(p));
+    return [...s];
+  }
+  function buildGenres() {
+    const cnt = {};
+    ALL.forEach((g) => (g.genres || []).forEach((x) => (cnt[x] = (cnt[x] || 0) + 1)));
+    const list = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 14);
+    $("#genres").innerHTML = list.length ? `<button class="chip${F.genre ? "" : " on"}" data-genre="">كل الأنواع</button>` +
+      list.map(([g]) => `<button class="chip${F.genre === g ? " on" : ""}" data-genre="${esc(g)}">${esc(g)}</button>`).join("") : "";
+  }
+  function view() {
+    const q = norm(F.q);
+    let r = ALL.filter((g) => (!q || norm(g.name).includes(q)) && (F.plat === "all" || platsOf(g).includes(F.plat)) &&
+      (!F.sale || (g.usd && g.usd.pct > 0)) && (!F.genre || (g.genres || []).includes(F.genre)));
+    const s = F.sort;
+    r.sort((a, b) => s === "low" ? minPrice(a) - minPrice(b) : s === "high" ? (minPrice(b) === Infinity ? -1 : minPrice(b)) - (minPrice(a) === Infinity ? -1 : minPrice(a))
+      : s === "sale" ? (b.usd?.pct || 0) - (a.usd?.pct || 0) : a.name.localeCompare(b.name, "en"));
+    return r;
+  }
+  function img(g) {
+    if (!g.cover) return `<div class="ph">${esc(g.name.trim()[0] || "?")}</div>`;
+    const u = g.cover + (g.cover.includes("?") ? "&" : "?") + "w=520";
+    return `<img src="${esc(u)}" alt="${esc(g.name)}" loading="lazy" decoding="async" onerror="this.parentNode.innerHTML='<div class=ph>${esc((g.name.trim()[0] || "?").replace(/'/g, ""))}</div>'" />`;
+  }
+  function card(g, i) {
+    const a = g.avail;
+    const opts = SLOTS.filter(([k]) => g.prices[k] != null).map(([k, label]) => {
+      const off = a && a[k] === false;
+      return `<button class="opt${off ? " off" : ""}" data-i="${i}" data-k="${k}" ${off ? "disabled" : ""}><span class="l">${label}</span><span class="p">${off ? "غير متاح حاليًا" : `${fmt(g.prices[k])}<small>${esc(CFG.currency)}</small>`}</span></button>`;
+    }).join("");
+    const u = g.usd;
+    return `<article class="card">
+      <div class="cover">${img(g)}
+        ${u && u.pct > 0 ? `<span class="tag sale">🔥 -${u.pct}%</span>` : ""}
+        <span class="plat">${platsOf(g).map((p) => `<span>${p}</span>`).join("")}</span>
+      </div>
+      <div class="body">
+        <div class="name" title="${esc(g.name)}">${esc(g.name)}</div>
+        <div class="genres">${(g.genres || []).map((x) => "لعبة " + esc(x)).join(" · ") || "&nbsp;"}</div>
+        ${u ? `<div class="usd">سعرها في المتجر: <b>${usd(u.now)}</b>${u.pct > 0 ? `<s>${usd(u.base)}</s>` : ""}</div>` : '<div class="usd">&nbsp;</div>'}
+        <div class="opts">${opts}</div>
+      </div>
+    </article>`;
+  }
+  function render() {
+    const r = view();
+    $("#grid").innerHTML = r.length ? r.map((g) => card(g, ALL.indexOf(g))).join("") : '<div class="empty">مفيش لعبة بالاسم ده. جرّب كلمة تانية، أو كلمنا ونوفّرهالك.</div>';
+    $("#cnt").textContent = r.length + " لعبة";
+  }
+
+  // ------------------------------------------------------------------ order sheet
+  let PICK = null;
+  const waNum = () => String(CFG.contacts?.whatsapp || "").replace(/\D/g, "");
+  const orderText = () => `السلام عليكم، عايز أشتري لعبة:\n🎮 ${PICK.g.name}\n🕹️ ${PICK.label}\n💸 ${fmt(PICK.price)} ${CFG.currency}`;
+  function openSheet(pick) {
+    PICK = pick;
+    const c = CFG.contacts || {};
+    const igOk = !!c.instagram && !/YOUR_/i.test(c.instagram);
+    const txt = pick ? orderText() : "السلام عليكم، عايز أشتري لعبة من عندكم.";
+    $("#sheet").innerHTML = `
+      <h3>${pick ? "تمام! كمّل طلبك" : "اطلب دلوقتي"}</h3>
+      ${pick ? `<div class="sum"><div class="g">${esc(pick.g.name)}</div><div class="o"><span>${esc(pick.label)}</span><b>${fmt(pick.price)} ${esc(CFG.currency)}</b></div></div>` : ""}
+      <div class="how">اختار طريقة التواصل (الأسرع أولًا):</div>
+      <button class="go fb" data-go="fb"><span class="ic">💬</span><span>ماسنجر صفحتنا على فيسبوك<small>أسرع رد، هنكمّل معاك هناك</small></span><span class="n">1</span></button>
+      <button class="go wa" data-go="wa"><span class="ic">📱</span><span>واتساب<small>الرسالة بتتكتب لوحدها</small></span><span class="n">2</span></button>
+      ${igOk ? `<button class="go ig" data-go="ig"><span class="ic">📸</span><span>ماسنجر انستجرام<small>كلمنا على الدايركت</small></span><span class="n">3</span></button>` : ""}
+      <div class="msg" id="msgBox">${esc(txt)}</div>
+      <button class="close" id="closeBtn" type="button">إلغاء</button>`;
+    $("#ov").classList.add("on");
+    document.body.style.overflow = "hidden";
+  }
+  function closeSheet() { $("#ov").classList.remove("on"); document.body.style.overflow = ""; }
+  function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("on"), 3200); }
+  async function go(kind) {
+    const c = CFG.contacts || {};
+    const txt = PICK ? orderText() : "السلام عليكم، عايز أشتري لعبة من عندكم.";
+    if (kind === "wa") {
+      const n = waNum();
+      if (!n || /X/i.test(String(c.whatsapp))) { toast("رقم الواتساب لسه مش متحط في الموقع"); return; }
+      window.open(`https://wa.me/${n}?text=${encodeURIComponent(txt)}`, "_blank", "noopener");
+      return;
+    }
+    const url = kind === "fb" ? c.facebookMessenger : c.instagram;
+    if (!url || /YOUR_/i.test(url)) { toast("الرابط ده لسه مش متحط في الموقع"); return; }
+    try { await navigator.clipboard.writeText(txt); toast("اتنسخت رسالة الطلب، الصقها في الشات 👌"); } catch { /* ignore */ }
+    window.open(url, "_blank", "noopener");
+  }
+
+  // ------------------------------------------------------------------ events
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    const plat = t.closest("[data-plat]");
+    if (plat) { F.plat = plat.dataset.plat; document.querySelectorAll("[data-plat]").forEach((b) => b.classList.toggle("on", b === plat)); render(); return; }
+    const sale = t.closest("[data-sale]");
+    if (sale) { F.sale = !F.sale; sale.classList.toggle("on", F.sale); render(); return; }
+    const ge = t.closest("[data-genre]");
+    if (ge) { F.genre = ge.dataset.genre; buildGenres(); render(); return; }
+    const op = t.closest(".opt[data-i]");
+    if (op) {
+      const g = ALL[Number(op.dataset.i)], k = op.dataset.k;
+      openSheet({ g, k, label: SLOTS.find((s) => s[0] === k)[1], price: g.prices[k] });
+      return;
+    }
+    const gb = t.closest("[data-go]"); if (gb) { go(gb.dataset.go); return; }
+    if (t.closest("#topContact")) { openSheet(null); return; }
+    if (t.id === "ov" || t.closest("#closeBtn")) closeSheet();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+  $("#q").addEventListener("input", (e) => { F.q = e.target.value; render(); });
+  $("#sort").addEventListener("change", (e) => { F.sort = e.target.value; render(); });
+  $("#yr").textContent = new Date().getFullYear();
+
+  load(true);
+  setInterval(() => { load(false); }, Math.max(1, Number(CFG.refreshMinutes) || 5) * 6e4);
+  setInterval(stamp, 30000);
+})();
+</script>
+</body>
+</html>

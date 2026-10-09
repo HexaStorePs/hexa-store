@@ -1,0 +1,284 @@
+[
+ {
+  "name": "007 First Light",
+  "p5": 2000,
+  "p4": null,
+  "sec": 1500
+ },
+ {
+  "name": "A Plague Tale Requiem",
+  "p5": 650,
+  "p4": null,
+  "sec": 440
+ },
+ {
+  "name": "Alan Wake 2",
+  "p5": 800,
+  "p4": null,
+  "sec": 510
+ },
+ {
+  "name": "ARC Raiders",
+  "p5": 1130,
+  "p4": null,
+  "sec": 650
+ },
+ {
+  "name": "Assassin's Creed Shadows",
+  "p5": 1150,
+  "p4": null,
+  "sec": 710
+ },
+ {
+  "name": "ASTRO BOT",
+  "p5": 1650,
+  "p4": null,
+  "sec": 1150
+ },
+ {
+  "name": "Baldur's Gate 3",
+  "p5": 2450,
+  "p4": null,
+  "sec": 1000
+ },
+ {
+  "name": "Black Myth: Wukong",
+  "p5": 1500,
+  "p4": null,
+  "sec": 1200
+ },
+ {
+  "name": "Call of Duty Black Ops 6",
+  "p5": 1100,
+  "p4": 460,
+  "sec": 610
+ },
+ {
+  "name": "Cyberpunk 2077",
+  "p5": 550,
+  "p4": 350,
+  "sec": 350
+ },
+ {
+  "name": "Dead Space",
+  "p5": 440,
+  "p4": null,
+  "sec": 280
+ },
+ {
+  "name": "DEATH STRANDING 2 ON THE BEACH",
+  "p5": 1740,
+  "p4": null,
+  "sec": 1090
+ },
+ {
+  "name": "Elden Ring",
+  "p5": 1150,
+  "p4": 750,
+  "sec": 550
+ },
+ {
+  "name": "FC 27 standard edition",
+  "p5": 1650,
+  "p4": 650,
+  "sec": 1000
+ },
+ {
+  "name": "FINAL FANTASY VII REBIRTH",
+  "p5": 670,
+  "p4": null,
+  "sec": 450
+ },
+ {
+  "name": "Forza Horizon 5",
+  "p5": 1100,
+  "p4": null,
+  "sec": 730
+ },
+ {
+  "name": "Ghost of Yōtei",
+  "p5": 2050,
+  "p4": null,
+  "sec": 1500
+ },
+ {
+  "name": "God of War Ragnarök ( Ps5 and Ps4 )",
+  "p5": 1550,
+  "p4": 1150,
+  "sec": 950
+ },
+ {
+  "name": "Gran Turismo® 7",
+  "p5": 900,
+  "p4": 550,
+  "sec": 600
+ },
+ {
+  "name": "Grand Theft Auto VI",
+  "p5": 2500,
+  "p4": null,
+  "sec": 1500
+ },
+ {
+  "name": "GTA V (Crossgen)",
+  "p5": 610,
+  "p4": 350,
+  "sec": 280
+ },
+ {
+  "name": "Hades",
+  "p5": 220,
+  "p4": 190,
+  "sec": 150
+ },
+ {
+  "name": "HELLDIVERS 2",
+  "p5": 940,
+  "p4": null,
+  "sec": 730
+ },
+ {
+  "name": "Hogwarts Legacy Deluxe Edition",
+  "p5": 550,
+  "p4": 390,
+  "sec": 350
+ },
+ {
+  "name": "Horizon Forbidden West",
+  "p5": 700,
+  "p4": 440,
+  "sec": 380
+ },
+ {
+  "name": "It Takes Two",
+  "p5": 360,
+  "p4": 250,
+  "sec": 230
+ },
+ {
+  "name": "Kingdom Come: Deliverance II",
+  "p5": 1310,
+  "p4": null,
+  "sec": 870
+ },
+ {
+  "name": "Lies Of P",
+  "p5": 710,
+  "p4": 550,
+  "sec": 520
+ },
+ {
+  "name": "Marvel’s Spider-Man 2",
+  "p5": 1250,
+  "p4": null,
+  "sec": 850
+ },
+ {
+  "name": "Minecraft (PS4 & PS5)",
+  "p5": 580,
+  "p4": 330,
+  "sec": 320
+ },
+ {
+  "name": "Mortal Kombat 1",
+  "p5": 460,
+  "p4": null,
+  "sec": 290
+ },
+ {
+  "name": "NBA 2K26",
+  "p5": 580,
+  "p4": 360,
+  "sec": 320
+ },
+ {
+  "name": "Red Dead Redemption 2",
+  "p5": 670,
+  "p4": 460,
+  "sec": 370
+ },
+ {
+  "name": "Resident Evil Village",
+  "p5": 250,
+  "p4": 220,
+  "sec": 160
+ },
+ {
+  "name": "Sekiro™: Shadows Die Twice - Game of the Year Edition",
+  "p5": 1500,
+  "p4": 950,
+  "sec": 750
+ },
+ {
+  "name": "Stellar Blade",
+  "p5": 1310,
+  "p4": null,
+  "sec": 870
+ },
+ {
+  "name": "Stray",
+  "p5": 380,
+  "p4": 300,
+  "sec": 230
+ },
+ {
+  "name": "TEKKEN 8",
+  "p5": 830,
+  "p4": null,
+  "sec": 440
+ },
+ {
+  "name": "The Last of Us Part I",
+  "p5": 1250,
+  "p4": null,
+  "sec": 850
+ },
+ {
+  "name": "The Witcher 3: Wild Hunt — Remastered",
+  "p5": 1260,
+  "p4": 850,
+  "sec": 590
+ },
+ {
+  "name": "Until Dawn",
+  "p5": 1250,
+  "p4": null,
+  "sec": 800
+ },
+ {
+  "name": "WWE 2K25",
+  "p5": 1020,
+  "p4": 730,
+  "sec": 510
+ },
+ {
+  "name": "Yakuza: Like a Dragon",
+  "p5": 230,
+  "p4": 200,
+  "sec": 150
+ },
+ {
+  "name": "The Crew Motorfest",
+  "p5": 580,
+  "p4": 380,
+  "sec": 290
+ },
+ {
+  "name": "Sackboy A Big Adventure",
+  "p5": 700,
+  "p4": 390,
+  "sec": 380
+ },
+ {
+  "name": "Sifu",
+  "p5": 290,
+  "p4": 220,
+  "sec": 170
+ },
+ {
+  "name": "Dying Light 2",
+  "p5": 390,
+  "p4": 310,
+  "sec": 260
+ }
+]

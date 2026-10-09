@@ -1,0 +1,15 @@
+{
+  "siteName": "HEXA STORE",
+  "tagline": "Your Gaming World",
+  "notionPricesDb": "df5042fd-a36a-498d-98d1-7738ff819c4d",
+  "notionAccountsDb": "6a14124b-8dbd-48b2-98ab-ecfabfea0bae",
+  "contacts": {
+    "facebookMessenger": "https://m.me/HexaStorez",
+    "whatsapp": "201005048681",
+    "instagram": "https://ig.me/m/hexa_store2000",
+    "facebookPage": "https://www.facebook.com/HexaStorez/"
+  },
+  "currency": "ج",
+  "hideSoldOut": false,
+  "refreshMinutes": 5
+}
