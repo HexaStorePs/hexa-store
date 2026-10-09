@@ -17,8 +17,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const cfg = JSON.parse(await fs.readFile(path.join(ROOT, "site.config.json"), "utf8"));
 const SAMPLE = process.argv.includes("--sample");
 const TOKEN = (process.env.NOTION_TOKEN || "").trim();
-const OUT = path.join(ROOT, "data", "games.json");
+const OUT = process.env.OUT_FILE || path.join(ROOT, "data", "games.json");
 const META = path.join(ROOT, "data", "meta.json"); // genres per Sony product (fetched once, then cached)
+const PR = { r5: 1700, r4: 1150, rsec: 800, discLo: 50, discHi: 100, extraLo: 100, extraHi: 200, perk: 110, ...(cfg.pricing || {}) };
 
 // --------------------------------------------------------------- helpers
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -159,7 +160,7 @@ function pickProduct(name, results, g) {
 function coverOf(x) {
   const imgs = (x.media ?? []).filter((m) => m.type === "IMAGE");
   const by = (role) => imgs.find((m) => m.role === role)?.url;
-  return by("GAMEHUB_COVER_ART") || by("MASTER") || by("PORTRAIT_BANNER") || imgs[0]?.url || null;
+  return by("MASTER") || by("PORTRAIT_BANNER") || by("GAMEHUB_COVER_ART") || imgs[0]?.url || null;
 }
 const AR_GENRES = [
   [/role playing|rpg/i, "آر بي جي"], [/action/i, "أكشن"], [/adventure/i, "مغامرة"], [/shooter/i, "تصويب"], [/fight/i, "قتال"],
@@ -180,20 +181,59 @@ async function fetchGenres(productId) {
   return [...m[1].matchAll(/"value":"([^"]+)"/g)].map((x) => x[1]);
 }
 
+// --------------------------------------------------------------- auto pricing (same rules as HEXA Pricer)
+const r10 = (n) => Math.round(n / 10) * 10;
+async function officialDollar() {
+  for (const url of ["https://api.coinbase.com/v2/exchange-rates?currency=USD", "https://open.er-api.com/v6/latest/USD"]) {
+    try {
+      const j = await (await fetch(url)).json();
+      const v = Number(j?.data?.rates?.EGP ?? j?.rates?.EGP);
+      if (v > 20) return v;
+    } catch { /* next source */ }
+  }
+  return Number(cfg.fallbackDollar) || 50;
+}
+// the (hidden) Full price is cheaper than the dollar value by discLo..discHi EGP, on a round number
+function fullFor(V) {
+  if (V < 400) return Math.max(10, r10(V * 0.85));
+  const mid = V - (PR.discLo + PR.discHi) / 2, c = [];
+  for (let x = Math.ceil((V - PR.discHi) / 10) * 10; x <= V - PR.discLo; x += 10) if (x > 0) c.push(x);
+  if (!c.length) return r10(V * 0.85);
+  return c.sort((a, b) => ((a % 50 ? 1000 : 0) + Math.abs(a - mid)) - ((b % 50 ? 1000 : 0) + Math.abs(b - mid)))[0];
+}
+const PERK_RE = /fifa|ea sports fc|\bfc ?\d{2}\b|madden|nba ?2k|ultimate team|\bpoints\b|\bvc\b/i;
+function autoPrices(usd, platforms, name, dollar) {
+  const full = fullFor(usd * dollar);
+  const has4 = platforms.includes("PS4"), has5 = platforms.includes("PS5") || has4; // PS4 games run on PS5 too
+  const slots = [];
+  if (has5) slots.push(["ps5", PR.r5]);
+  if (has4) slots.push(["ps4", PR.r4]);
+  const ref = has5 ? PR.r5 : PR.r4;
+  slots.push(["sec", PERK_RE.test(name) ? (ref * PR.perk) / 100 : PR.rsec]);
+  const target = full + (PR.extraLo + PR.extraHi) / 2, tw = slots.reduce((a, [, w]) => a + w, 0), out = {};
+  slots.forEach(([k, w]) => (out[k] = Math.max(10, r10((target * w) / tw))));
+  let sum = Object.values(out).reduce((a, b) => a + b, 0);
+  const big = slots.slice().sort((a, b) => b[1] - a[1])[0][0];
+  for (let g = 0; g < 30 && (sum < full + PR.extraLo || sum > full + PR.extraHi); g++) { const d = sum < full + PR.extraLo ? 10 : -10; out[big] += d; sum += d; }
+  return { ps5: out.ps5 ?? null, ps4: out.ps4 ?? null, sec: out.sec ?? null };
+}
+
 // --------------------------------------------------------------- main
 const notionGames = await loadNotion();
+const DOLLAR = await officialDollar();
+let autoPriced = 0;
 const meta = JSON.parse(await fs.readFile(META, "utf8").catch(() => "{}"));
 console.log(`Notion: ${notionGames.length} games`);
 
 let found = 0, genresFetched = 0;
 const rows = await pool(notionGames, 6, async (g) => {
   const hasPrice = g.p5 != null || g.p4 != null || g.sec != null;
+  const unpriced = !hasPrice;
   const row = {
     id: g.id, name: cleanName(g.name), notionName: g.name,
     prices: { ps5: g.p5, ps4: g.p4, sec: g.sec }, avail: g.avail,
     cover: null, genres: [], usd: null, platforms: [], sonyId: null,
   };
-  if (!hasPrice) return row;
   try {
     const res = await sonySearch(cleanName(g.name));
     const x = pickProduct(cleanName(g.name), res, g);
@@ -211,6 +251,10 @@ const rows = await pool(notionGames, 6, async (g) => {
         try { meta[x.id] = { genres: await fetchGenres(x.id), at: Date.now() }; genresFetched++; } catch { meta[x.id] = { genres: [], at: Date.now(), failed: true }; }
       }
       row.genres = (meta[x.id].genres ?? []).map(arGenre).filter((v, i, a) => a.indexOf(v) === i).slice(0, 3);
+      if (unpriced && row.usd) { // not priced in Notion → price it with the same rule the HEXA Pricer uses
+        row.prices = autoPrices(row.usd.now, row.platforms, row.name, DOLLAR);
+        row.autoPriced = true; autoPriced++;
+      }
     }
   } catch (e) { console.warn("sony failed for", g.name, e.message); }
   return row;
@@ -226,4 +270,4 @@ const unique = games.filter((g) => { const k = cmp(g.name) + "|" + JSON.stringif
 await fs.mkdir(path.join(ROOT, "data"), { recursive: true });
 await fs.writeFile(META, JSON.stringify(meta));
 await fs.writeFile(OUT, JSON.stringify({ updatedAt: new Date().toISOString(), count: unique.length, games: unique }));
-console.log(`Done: ${unique.length} games written (${found} matched on PS Store, ${genresFetched} new genre lookups).`);
+console.log(`Dollar ${DOLLAR}. Done: ${unique.length} games written (${found} matched on PS Store, ${genresFetched} new genre lookups, ${autoPriced} priced automatically).`);

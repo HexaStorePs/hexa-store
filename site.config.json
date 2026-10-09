@@ -11,5 +11,16 @@
   },
   "currency": "ج",
   "hideSoldOut": false,
-  "refreshMinutes": 5
+  "refreshMinutes": 5,
+  "pricing": {
+    "r5": 1700,
+    "r4": 1150,
+    "rsec": 800,
+    "discLo": 50,
+    "discHi": 100,
+    "extraLo": 100,
+    "extraHi": 200,
+    "perk": 110
+  },
+  "fallbackDollar": 50
 }
