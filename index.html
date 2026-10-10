@@ -3,8 +3,19 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>HEXA STORE | ألعاب بلايستيشن</title>
+<title>Hexa Store Website | هيكسا ستور</title>
 <meta name="description" content="HEXA STORE: ألعاب بلايستيشن PS5 و PS4 بأحسن الأسعار. اختار لعبتك واطلبها على ماسنجر أو واتساب." />
+<link rel="canonical" href="https://hexastoreps.github.io/hexa-store/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Hexa Store" />
+<meta property="og:title" content="Hexa Store Website" />
+<meta property="og:description" content="ألعاب بلايستيشن PS5 و PS4 بأحسن الأسعار. اختار لعبتك واطلبها على ماسنجر أو واتساب." />
+<meta property="og:url" content="https://hexastoreps.github.io/hexa-store/" />
+<meta property="og:image" content="https://hexastoreps.github.io/hexa-store/assets/logo.png" />
+<meta property="og:locale" content="ar_EG" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Hexa Store Website" />
+<meta name="twitter:image" content="https://hexastoreps.github.io/hexa-store/assets/logo.png" />
 <meta name="theme-color" content="#07061a" />
 <link rel="icon" href="assets/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -470,14 +481,14 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     renderPage(i);
     $("#gp").hidden = false; $("#gp").scrollTop = 0;
     document.body.style.overflow = "hidden";
-    document.title = ALL[i].name + " | HEXA STORE";
+    document.title = ALL[i].name + " | Hexa Store";
     if (push !== false) history.pushState({ g: ALL[i].id }, "", "#g=" + encodeURIComponent(ALL[i].id));
   }
   function closePage(fromPop) {
     if (OPEN_I < 0) return;
     $("#gp").hidden = true; OPEN_I = -1;
     document.body.style.overflow = "";
-    document.title = "HEXA STORE | ألعاب بلايستيشن";
+    document.title = "Hexa Store Website | هيكسا ستور";
     if (!fromPop && location.hash.startsWith("#g=")) history.back();
     render(); window.scrollTo(0, SCROLL_Y);
   }
