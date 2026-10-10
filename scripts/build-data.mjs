@@ -41,8 +41,12 @@ function norm(s) {
     .replace(/\s*\((?!\d{4}\)).*$/, " ").replace(/[™®©]/g, "")
     .replace(/\bps[45]\b(\s*(&|and|y|e|et|und|og|och|i|ve)\s*ps[45]\b)?/g, " ")
     .replace(/['’‘`´]/g, "").replace(/&/g, " and ")
-    .replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    .replace(/[^\p{L}\p{N}]+/gu, " ").trim()
+    .split(" ").map((w) => TOKEN_MAP[w] ?? w).join(" ").replace(/\s+/g, " ").trim();
 }
+// II → 2, "two" → 2, NFS → need for speed ... so "Hades 2" finds "Hades II" and "NFS Heat" finds "Need for Speed Heat"
+const TOKEN_MAP = { ii: "2", iii: "3", iv: "4", vi: "6", vii: "7", viii: "8", ix: "9", two: "2", three: "3", four: "4", five: "5", six: "6", seven: "7", eight: "8", nine: "9",
+  nfs: "need for speed", cod: "call of duty", gta: "grand theft auto", mk: "mortal kombat", bf: "battlefield", r6: "rainbow six", re: "resident evil" };
 const cmp = (s) => norm(s).replace(/ /g, "");
 function parsePrice(s) {
   const m = String(s ?? "").replace(/\s/g, "").match(/\d[\d.,]*/);
@@ -94,7 +98,7 @@ const strOf = (v) => !v ? "" : v.type === "formula" ? String(v.formula?.string ?
 
 async function loadNotion() {
   if (SAMPLE) {
-    const s = JSON.parse(await fs.readFile(path.join(ROOT, "scripts", "sample-notion.json"), "utf8"));
+    const s = JSON.parse(await fs.readFile(process.env.SAMPLE_FILE || path.join(ROOT, "scripts", "sample-notion.json"), "utf8"));
     return s.map((g) => ({ id: g.name, name: g.name, p5: g.p5 ?? null, p4: g.p4 ?? null, sec: g.sec ?? null, avail: null }));
   }
   if (!TOKEN) throw new Error("NOTION_TOKEN is missing (add it as a repository secret, or run with --sample)");
@@ -135,7 +139,7 @@ const HASH = "4df6284f982e57bec70f23c77e2c219dc792eb19af7fb3d3a81767aa3f1958aa";
 const GAME_TYPES = ["FULL_GAME", "GAME_BUNDLE", "PREMIUM_EDITION"];
 const sonySearch = (term) => sonySearchIn("US", "en", term);
 async function sonySearchIn(cc, lang, term) {
-  const vars = { countryCode: cc, languageCode: lang, nextCursor: "", pageOffset: 0, pageSize: 12, searchTerm: term };
+  const vars = { countryCode: cc, languageCode: lang, nextCursor: "", pageOffset: 0, pageSize: 24, searchTerm: term };
   const url = `${GQL}?operationName=getSearchResults&variables=${encodeURIComponent(JSON.stringify(vars))}&extensions=${encodeURIComponent(JSON.stringify({ persistedQuery: { version: 1, sha256Hash: HASH } }))}`;
   return retry(async () => {
     const r = await fetch(url, { headers: { "content-type": "application/json", "x-psn-store-locale-override": `${lang}-${cc}`, origin: "https://store.playstation.com", referer: "https://store.playstation.com/" } });
@@ -147,7 +151,7 @@ async function sonySearchIn(cc, lang, term) {
 // whose platforms fit the slots you sell (PS5+PS4 → cross-gen, PS5 only → anything with PS5...)
 function pickProduct(name, results, g) {
   const want = norm(name), wantC = cmp(name), words = want.split(" ").filter(Boolean);
-  const ok = results.filter((x) => x?.name && x.price && !x.price.isFree && GAME_TYPES.includes(x.storeDisplayClassification));
+  const ok = results.filter((x) => x?.name && x.price && (!x.price.isFree || parsePrice(x.price.basePrice)) && GAME_TYPES.includes(x.storeDisplayClassification));
   let hits = ok.filter((x) => cmp(x.name) === wantC);
   if (!hits.length) {
     const c = ok.filter((x) => { const n = norm(x.name); return (words.every((w) => n.includes(w)) || cmp(x.name).includes(wantC)) && n.split(" ").every((w) => !/^\d+$/.test(w) || words.includes(w)); })
@@ -171,16 +175,34 @@ const AR_GENRES = [
   [/casual/i, "خفيفة"], [/educational/i, "تعليمية"], [/fitness/i, "لياقة"], [/flight/i, "طيران"], [/open world/i, "عالم مفتوح"], [/unique/i, "مميزة"],
 ];
 const arGenre = (g) => AR_GENRES.find(([re]) => re.test(g))?.[1] ?? g;
-async function fetchGenres(productId) {
-  const url = `https://store.playstation.com/en-us/product/${productId}`;
+async function fetchInfo(productId, cc = "US") {
+  const url = `https://store.playstation.com/en-${cc.toLowerCase()}/product/${productId}`;
   const html = await retry(async () => {
     const r = await fetch(url, { headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120 Safari/537.36", "accept-language": "en-US,en;q=0.9" } });
     if (!r.ok) throw new Error("page " + r.status);
     return r.text();
   }, 2);
   const m = html.match(/"localizedGenres":\[(.*?)\]/);
-  if (!m) return [];
-  return [...m[1].matchAll(/"value":"([^"]+)"/g)].map((x) => x[1]);
+  const genres = m ? [...m[1].matchAll(/"value":"([^"]+)"/g)].map((x) => x[1]) : [];
+  const d = html.match(/<meta[^>]+(?:property="og:description"|name="description")[^>]+content="([^"]*)"/i);
+  const desc = d ? d[1].replace(/&amp;/g, "&").replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 260) : "";
+  return { genres, desc };
+}
+
+const EDITION_WORDS = /\b(deluxe|gold|ultimate|standard|premium|digital|complete|definitive|goty|game of the year|edition|collection|bundle|remastered|season pass|crossgen|ver)\b/gi;
+async function findProduct(name, g) {
+  const base = cleanName(name);
+  const stripped = base.replace(EDITION_WORDS, " ").replace(/\(.*?\)/g, " ").replace(/\s{2,}/g, " ").trim();
+  const queries = [...new Set([base, stripped])].filter((q) => q.length >= 3);
+  for (const [cc, lang] of [["US", "en"], ["GB", "en"], ["TR", "en"], ["DE", "de"], ["IN", "en"]]) {
+    for (const q of (cc === "US" ? queries : queries.slice(0, 2))) {
+      try {
+        const x = pickProduct(q, await sonySearchIn(cc, lang, q), g);
+        if (x) return { x, cc };
+      } catch { /* next */ }
+    }
+  }
+  return null;
 }
 
 // --------------------------------------------------------------- PlayStation Plus subscriptions
@@ -309,21 +331,24 @@ const rows = await pool(notionGames, 6, async (g) => {
     return row;
   }
   try {
-    const res = await sonySearch(cleanName(g.name));
-    const x = pickProduct(cleanName(g.name), res, g);
-    if (x) {
+    const hit = await findProduct(g.name, g);
+    if (hit) {
+      const { x, cc } = hit;
       found++;
       row.sonyId = x.id; row.platforms = x.platforms ?? [];
       row.cover = coverOf(x);
-      const now = parsePrice(x.price.discountedPrice ?? x.price.basePrice), base = parsePrice(x.price.basePrice);
+      row.shots = (x.media ?? []).filter((m) => m.type === "IMAGE" && m.role === "SCREENSHOT").slice(0, 4).map((m) => m.url);
+      const nowTxt = x.price.isFree ? x.price.basePrice : (x.price.discountedPrice ?? x.price.basePrice);
+      const now = parsePrice(nowTxt), base = parsePrice(x.price.basePrice);
       const plus = (x.price.serviceBranding ?? []).includes("PS_PLUS");
       const cur = plus ? base : now;
-      if (cur && /\$|USD/.test(String(x.price.discountedPrice ?? x.price.basePrice))) {
+      if (cc === "US" && cur && /\$|USD/.test(String(nowTxt))) {
         row.usd = { now: cur, base: base ?? cur, pct: base && cur < base ? Math.round((1 - cur / base) * 100) : 0 };
       }
-      if (!meta[x.id]) {
-        try { meta[x.id] = { genres: await fetchGenres(x.id), at: Date.now() }; genresFetched++; } catch { meta[x.id] = { genres: [], at: Date.now(), failed: true }; }
+      if (!meta[x.id] || !("desc" in meta[x.id])) {
+        try { Object.assign((meta[x.id] = { at: Date.now() }), await fetchInfo(x.id, cc)); genresFetched++; } catch { meta[x.id] = { genres: [], at: Date.now(), failed: true }; }
       }
+      row.desc = meta[x.id].desc || "";
       row.genres = (meta[x.id].genres ?? []).map(arGenre).filter((v, i, a) => a.indexOf(v) === i).slice(0, 3);
       if (unpriced && row.usd) { // not priced in Notion → price it with the same rule the HEXA Pricer uses
         const cost = CARD_RATES ? await cheapestCost(row.name, row.platforms, CARD_RATES, FX) : null;

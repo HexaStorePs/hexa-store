@@ -124,6 +124,46 @@ header.top{position:sticky;top:0;z-index:30;background:rgba(7,6,26,.88);backdrop
 .ct{display:flex;justify-content:space-between;padding:10px 0 6px;border-top:2px solid var(--line);font-size:16px}
 .ct b{color:var(--gold);font-size:18px}
 body{padding-bottom:84px}
+.cover .ph2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center;
+  background:linear-gradient(135deg,#2b2370,#150f3e 60%,#3a1448);z-index:1}
+.cover .ph2 em{font-style:normal;font-family:"PS2P",monospace;font-size:13px;color:var(--gold);opacity:.8;text-shadow:2px 2px 0 #3b2a00}
+.cover .ph2 b{font-size:15px;line-height:1.4;unicode-bidi:plaintext;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cover,.name{cursor:pointer}
+.gp{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;-webkit-overflow-scrolling:touch}
+.gp[hidden]{display:none}
+.gp .top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(7,6,26,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.gp .top .t{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;unicode-bidi:plaintext;text-align:right}
+.iconb{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;white-space:nowrap}
+.iconb:hover{border-color:var(--gold)}
+.gbody{max-width:1000px;margin:0 auto;padding:18px 16px 120px;display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px}
+.gbody>*{min-width:0}.gp{overflow-x:hidden}
+@media(max-width:760px){.gbody{grid-template-columns:1fr}}
+.gcover{aspect-ratio:1/1;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(135deg,#241c5a,#0d0a24);box-shadow:0 14px 50px rgba(79,107,255,.28),0 0 0 2px var(--line)}
+.gcover img{width:100%;height:100%;object-fit:contain;display:block;position:relative;z-index:1}
+.gcover .bg{position:absolute;inset:-12px;background-size:cover;background-position:center;filter:blur(18px) saturate(1.2) brightness(.55)}
+.ginfo h1{margin:0 0 6px;font-size:clamp(22px,4vw,32px);line-height:1.25;unicode-bidi:plaintext;text-align:right}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:30px;padding:3px 12px;font-size:13px;color:var(--lav)}
+.pill.p{color:var(--text);font-weight:800;letter-spacing:.04em}
+.gusd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:10px 0;color:var(--muted)}
+.gusd b{font-size:26px;color:var(--text);direction:ltr}.gusd s{direction:ltr}
+.gopts{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.gopts .opt{padding:14px 16px;border-radius:14px}
+.gopts .opt .l{font-size:15px;color:var(--text)}.gopts .opt .p{font-size:20px}
+.gnote{color:var(--muted);font-size:13px}
+.sec2{margin-top:22px}
+.sec2 h2{font-size:16px;margin:0 0 10px}
+.shots{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}
+.shots img{height:150px;border-radius:12px;scroll-snap-align:start;flex:none;background:var(--card);border:1px solid var(--line);cursor:zoom-in}
+.gdesc{color:#d9d3ff;line-height:1.8;font-size:14px;direction:ltr;text-align:left}
+.sim{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}
+.mini:hover{border-color:var(--pink)}
+.mini img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--card2)}
+.mini div{padding:6px 8px;font-size:12px;line-height:1.35}.mini b{display:block;unicode-bidi:plaintext;text-align:right;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mini small{color:var(--gold2);font-weight:800}
+.gcta{position:fixed;inset-inline:0;bottom:0;z-index:3;background:linear-gradient(0deg,var(--bg) 60%,transparent);padding:18px 16px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:10px}
+.gcta .cartbtn{max-width:620px;width:100%;border:0;border-radius:16px;padding:14px;font-weight:800;font-size:16px;cursor:pointer;background:linear-gradient(135deg,var(--gold),#ff9f1c);color:#241500;box-shadow:0 6px 0 #8a5a00}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--gold);color:#241500;font-weight:800;padding:10px 18px;border-radius:30px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
 .toast.on{opacity:1}
 .sugg{position:absolute;top:calc(100% + 6px);inset-inline:0;z-index:40;background:var(--card);border:1px solid var(--pink);border-radius:14px;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.55)}
@@ -172,6 +212,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
 <footer>© <span id="yr"></span> <b id="foot">HEXA STORE</b> · الأسعار بالجنيه المصري، وسعر الدولار هو السعر الحالي في متجر بلايستيشن الأمريكي.<div id="flinks" style="margin-top:8px"></div></footer>
 
 <button class="cartbar" id="cartbar" type="button" hidden><span class="cb">🛒 <b id="cartN">0</b></span><span class="ctt">اتمّ الطلب · <b id="cartTotal"></b></span><span class="cgo">كمّل ←</span></button>
+<div class="gp" id="gp" hidden></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -203,6 +244,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
         if (c.instagram && !/YOUR_/i.test(c.instagram)) a.push(`<a href="${esc(c.instagram.replace("ig.me/m/", "instagram.com/"))}" target="_blank" rel="noopener" style="color:var(--lav)">انستجرام</a>`);
         $("#flinks").innerHTML = a.join(" · "); }
       ALL = data.games || []; UPDATED = data.updatedAt; syncCart();
+      if (first) { const m = location.hash.match(/^#g=(.+)$/); if (m) { const i = ALL.findIndex((g) => g.id === decodeURIComponent(m[1])); if (i >= 0) openPage(i, false); } }
       buildGenres(); render(); stamp();
     } catch (e) { if (first) $("#grid").innerHTML = '<div class="empty">مقدرناش نحمّل الألعاب دلوقتي. جرّب تحدّث الصفحة.</div>'; }
   }
@@ -270,9 +312,9 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     return r;
   }
   function img(g) {
-    if (!g.cover) return `<div class="ph">${esc(g.name.trim()[0] || "?")}</div>`;
+    if (!g.cover) return `<div class="ph2"><em>HEXA</em><b>${esc(g.name)}</b></div>`;
     const u = g.cover + (g.cover.includes("?") ? "&" : "?") + "w=520";
-    return `<span class="bg" style="background-image:url('${esc(u)}')"></span><img src="${esc(u)}" alt="${esc(g.name)}" loading="lazy" decoding="async" onerror="this.parentNode.innerHTML='<div class=ph>${esc((g.name.trim()[0] || "?").replace(/'/g, ""))}</div>'" />`;
+    return `<span class="bg" style="background-image:url('${esc(u)}')"></span><img src="${esc(u)}" alt="${esc(g.name)}" loading="lazy" decoding="async" onerror="this.remove()" />`;
   }
   function card(g, i) {
     const a = g.avail;
@@ -281,12 +323,12 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     }).join("");
     const u = g.usd;
     return `<article class="card">
-      <div class="cover">${img(g)}
+      <div class="cover" data-open="${i}">${img(g)}
         ${u && u.pct > 0 ? `<span class="tag sale">🔥 -${u.pct}%</span>` : ""}
         <span class="plat">${platsOf(g).map((p) => `<span>${p}</span>`).join("")}</span>
       </div>
       <div class="body">
-        <div class="name" title="${esc(g.name)}">${esc(g.name)}</div>
+        <div class="name" data-open="${i}" title="${esc(g.name)}">${esc(g.name)}</div>
         <div class="genres">${g.subscription ? "اشتراك PlayStation Plus" : (g.genres || []).map((x) => "لعبة " + esc(x)).join(" · ") || "&nbsp;"}</div>
         ${u ? `<div class="usd">سعرها في المتجر: <b>${usd(u.now)}</b>${u.pct > 0 ? `<s>${usd(u.base)}</s>` : ""}</div>` : '<div class="usd">&nbsp;</div>'}
         <div class="opts">${opts}</div>
@@ -383,11 +425,80 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     window.open(url, "_blank", "noopener");
   }
 
+  // ------------------------------------------------------------------ game page
+  let OPEN_I = -1, SCROLL_Y = 0;
+  const gcover = (g, w) => g.cover ? `<span class="bg" style="background-image:url('${esc(g.cover + (g.cover.includes("?") ? "&" : "?") + "w=" + w)}')"></span><img src="${esc(g.cover + (g.cover.includes("?") ? "&" : "?") + "w=" + w)}" alt="${esc(g.name)}" onerror="this.remove()" />` : `<div class="ph2"><em>HEXA</em><b>${esc(g.name)}</b></div>`;
+  function similar(g, i) {
+    const gs = new Set(g.genres || []);
+    return ALL.map((x, j) => ({ x, j, s: j === i || x.subscription ? -1 : (x.genres || []).filter((t) => gs.has(t)).length * 10 + (x.cover ? 3 : 0) + (anyAvail(x) ? 1 : 0) }))
+      .filter((r) => r.s > 3).sort((a, b) => b.s - a.s).slice(0, 8);
+  }
+  function renderPage(i) {
+    const g = ALL[i]; if (!g) return;
+    OPEN_I = i;
+    const u = g.usd, pl = platsOf(g);
+    const opts = SLOTS.filter(([k]) => g.prices[k] != null).map(([k, label]) =>
+      `<button class="opt${inCart(g.id, k) ? " in" : ""}" data-i="${i}" data-k="${k}"><span class="l">${label}</span><span class="p">${fmt(g.prices[k])}<small>${esc(CFG.currency)}</small></span></button>`).join("");
+    const shots = (g.shots || []).map((s) => `<img src="${esc(s + (s.includes("?") ? "&" : "?") + "w=640")}" alt="" loading="lazy" data-zoom="${esc(s)}" />`).join("");
+    const sim = similar(g, i).map((r) => `<div class="mini" data-open="${r.j}">${r.x.cover ? `<img src="${esc(r.x.cover + (r.x.cover.includes("?") ? "&" : "?") + "w=240")}" alt="" loading="lazy" />` : '<img alt="" />'}<div><b>${esc(r.x.name)}</b><small>من ${fmt(minPrice(r.x))} ${esc(CFG.currency)}</small></div></div>`).join("");
+    $("#gp").innerHTML = `
+      <div class="top"><button class="iconb" data-gclose="1">→ رجوع</button><span class="t">${esc(g.name)}</span><button class="iconb" data-share="1">🔗 شير</button></div>
+      <div class="gbody">
+        <div><div class="gcover">${gcover(g, 700)}</div></div>
+        <div class="ginfo">
+          <h1>${esc(g.name)}</h1>
+          <div class="pills">
+            ${g.subscription ? '<span class="pill">اشتراك PlayStation Plus</span>' : (g.genres || []).map((x) => `<span class="pill">لعبة ${esc(x)}</span>`).join("")}
+            ${pl.map((p) => `<span class="pill p">${p}</span>`).join("")}
+          </div>
+          ${u ? `<div class="gusd">سعرها في متجر بلايستيشن الرسمي: <b>${usd(u.now)}</b>${u.pct > 0 ? `<s>${usd(u.base)}</s><span class="tag sale" style="position:static;display:inline-block">🔥 -${u.pct}%</span>` : ""}</div>` : ""}
+          <div class="how">اختار نسختك، ودوس عليها تتضاف للسلة:</div>
+          <div class="gopts">${opts}</div>
+          <div class="gnote">بتستلم اللعبة بعد التأكيد على حسابك مباشرة، والدفع بيتم من خلال الشات.</div>
+          ${g.desc ? `<div class="sec2"><h2>عن اللعبة</h2><div class="gdesc">${esc(g.desc)}</div></div>` : ""}
+          ${shots ? `<div class="sec2"><h2>صور من اللعبة</h2><div class="shots">${shots}</div></div>` : ""}
+          ${sim ? `<div class="sec2"><h2>ألعاب شبه دي</h2><div class="sim">${sim}</div></div>` : ""}
+        </div>
+      </div>
+      <div class="gcta"><button class="cartbtn" data-gorder="1">🛒 اطلب دلوقتي</button></div>`;
+  }
+  function openPage(i, push) {
+    if (OPEN_I < 0) SCROLL_Y = window.scrollY;
+    renderPage(i);
+    $("#gp").hidden = false; $("#gp").scrollTop = 0;
+    document.body.style.overflow = "hidden";
+    document.title = ALL[i].name + " | HEXA STORE";
+    if (push !== false) history.pushState({ g: ALL[i].id }, "", "#g=" + encodeURIComponent(ALL[i].id));
+  }
+  function closePage(fromPop) {
+    if (OPEN_I < 0) return;
+    $("#gp").hidden = true; OPEN_I = -1;
+    document.body.style.overflow = "";
+    document.title = "HEXA STORE | ألعاب بلايستيشن";
+    if (!fromPop && location.hash.startsWith("#g=")) history.back();
+    render(); window.scrollTo(0, SCROLL_Y);
+  }
+  window.addEventListener("popstate", () => {
+    const m = location.hash.match(/^#g=(.+)$/);
+    if (m) { const i = ALL.findIndex((g) => g.id === decodeURIComponent(m[1])); if (i >= 0) { openPage(i, false); return; } }
+    closePage(true);
+  });
+
   // ------------------------------------------------------------------ events
   document.addEventListener("click", (e) => {
     const t = e.target;
     const ge = t.closest("[data-genre]");
     if (ge) { F.genre = ge.dataset.genre; buildGenres(); render(); return; }
+    const zm = t.closest("[data-zoom]"); if (zm) { window.open(zm.dataset.zoom, "_blank", "noopener"); return; }
+    if (t.closest("[data-gclose]")) { closePage(); return; }
+    if (t.closest("[data-share]")) { try { navigator.clipboard.writeText(location.href); toast("اتنسخ لينك اللعبة 🔗"); } catch { toast(location.href); } return; }
+    if (t.closest("[data-gorder]")) {
+      const g = ALL[OPEN_I];
+      if (g && !SLOTS.some(([k]) => inCart(g.id, k))) { toast("اختار النسخة الأول (PS5 أو PS4 أو Secondary) 👆"); return; }
+      openCart(); return;
+    }
+    const opn = t.closest("[data-open]");
+    if (opn && !t.closest(".opt")) { openPage(Number(opn.dataset.open)); return; }
     const op = t.closest(".opt[data-i]");
     if (op) { toggleCart(ALL[Number(op.dataset.i)], op.dataset.k, op); return; }
     const rm = t.closest("[data-rm]");
@@ -397,7 +508,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;pad
     if (t.closest("#clearBtn")) { CART = []; saveCart(); updateBar(); render(); openCart(); return; }
     if (t.id === "ov" || t.closest("#closeBtn")) closeSheet();
   });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { if ($("#ov").classList.contains("on")) closeSheet(); else closePage(); } });
   let SG = [], SI = -1;
   const sgThumb = (g) => g.cover ? `<img src="${esc(g.cover + (g.cover.includes("?") ? "&" : "?") + "w=96")}" alt="" loading="lazy" />` : '<img alt="" />';
   function drawSugg() {
