@@ -24,5 +24,35 @@
   },
   "fallbackDollar": 50,
   "notionCardRatesDb": "c70d05d5-2d76-4fe2-a93d-6ceda05c6f2a",
-  "minMargin": 0.2
+  "minMargin": 0.2,
+  "aliases": {
+    "Resident Evil 9 Requiem deluxe edition": {
+      "search": "Resident Evil Requiem Deluxe Edition",
+      "name": "Resident Evil Requiem Deluxe Edition"
+    },
+    "Resident Evil 4 Gold Edition Separate Ways": "Resident Evil 4 Gold Edition",
+    "Resident Evil RACCOON City Bundle 2+3": "Resident Evil 2",
+    "Far Cry 5 & New Dawn Ultimate Edition": "Far Cry New Dawn Ultimate Edition",
+    "Horizon Zero Dawn Complete Edition (AR) & Remastered PS4 AND PS5": "Horizon Zero Dawn Remastered",
+    "The Wolf Among Us - A Telltale Games Series": "The Wolf Among Us",
+    "LEGO Harry Potter Collection PS4ver": "LEGO Harry Potter Collection",
+    "Call of Duty Black Ops & Season Pass": "Call of Duty Black Ops",
+    "Call of Duty Black Ops II & Season Pass": "Call of Duty Black Ops II",
+    "FC 27 Ultimate Plus Edition (AR)": "EA SPORTS FC 27 Ultimate Edition",
+    "Little Nightmares 1 & 2": "Little Nightmares I & II Bundle",
+    "The Division 1": "Tom Clancy's The Division"
+  },
+  "hidden": [
+    "Cars 3: Driven to Win",
+    "FIFA 23",
+    "FIFA 23 (AR)",
+    "LEGO 2K Drive Standard",
+    "NBA 2K24 (PS4)",
+    "NBA 2K24 (PS5)",
+    "PES 2019 (AR)",
+    "PES 2020 (AR)",
+    "PES 2021 (AR)",
+    "Toy Story 3",
+    "WWE 2K24"
+  ]
 }

@@ -190,8 +190,13 @@ async function fetchInfo(productId, cc = "US") {
 }
 
 const EDITION_WORDS = /\b(deluxe|gold|ultimate|standard|premium|digital|complete|definitive|goty|game of the year|edition|collection|bundle|remastered|season pass|crossgen|ver)\b/gi;
+const aliasOf = (name) => {
+  const a = (cfg.aliases || {})[name];
+  return a ? (typeof a === "string" ? { search: a } : a) : null;
+};
 async function findProduct(name, g) {
-  const base = cleanName(name);
+  const alias = aliasOf(name);
+  const base = cleanName(alias?.search || name);
   const stripped = base.replace(EDITION_WORDS, " ").replace(/\(.*?\)/g, " ").replace(/\s{2,}/g, " ").trim();
   const queries = [...new Set([base, stripped])].filter((q) => q.length >= 3);
   for (const [cc, lang] of [["US", "en"], ["GB", "en"], ["TR", "en"], ["DE", "de"], ["IN", "en"]]) {
@@ -321,7 +326,7 @@ const rows = await pool(notionGames, 6, async (g) => {
   const hasPrice = g.p5 != null || g.p4 != null || g.sec != null;
   const unpriced = !hasPrice;
   const row = {
-    id: g.id, name: cleanName(g.name), notionName: g.name,
+    id: g.id, name: aliasOf(g.name)?.name || cleanName(g.name), notionName: g.name,
     prices: { ps5: g.p5, ps4: g.p4, sec: g.sec }, avail: g.avail,
     cover: null, genres: [], usd: null, platforms: [], sonyId: null,
   };
@@ -362,7 +367,9 @@ const rows = await pool(notionGames, 6, async (g) => {
   return row;
 });
 
-const games = rows.filter((r) => r.prices.ps5 != null || r.prices.ps4 != null || r.prices.sec != null)
+const HIDDEN = new Set((cfg.hidden || []).map((n) => cmp(n)));
+const games = rows.filter((r) => !HIDDEN.has(cmp(r.notionName)))
+  .filter((r) => r.prices.ps5 != null || r.prices.ps4 != null || r.prices.sec != null)
   .filter((r) => !(cfg.hideSoldOut && r.avail && !r.avail.ps5 && !r.avail.ps4 && !r.avail.sec))
   .sort((a, b) => a.name.localeCompare(b.name, "en"));
 // de-duplicate identical names (Notion sometimes has the same game twice)
